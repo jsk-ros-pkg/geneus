@@ -54,7 +54,7 @@ macro(_generate_module_eus ARG_PKG ARG_GEN_OUTPUT_DIR ARG_GENERATED_FILES)
   add_custom_command(OUTPUT ${GEN_OUTPUT_FILE}
     DEPENDS ${GENEUS_BIN}
     COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENEUS_BIN}
-    -m -o ${ARG_GEN_OUTPUT_DIR} ${CATKIN_ORDERED_PACKAGES}
+    -m -o ${ARG_GEN_OUTPUT_DIR} ${ARG_PKG} ${ARG_DEPENDENCIES}
     COMMENT "Generating EusLisp manifest code for ${ARG_PKG}"
     )
 
