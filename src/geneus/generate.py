@@ -248,10 +248,9 @@ def write_begin(s, spec, is_service=False):
 
 def write_include(s, spec, is_srv=False):
     s.write(';;//! \\htmlinclude %s.msg.html'%spec.actual_name, newline=False) # t2
-    for field in spec.parsed_fields():
-        if not field.is_builtin and parse_msg_type(field)[0] != spec.package:
-            s.write('(if (not (find-package "%s"))'%parse_msg_type(field)[0].upper())
-            s.write('  (ros::roseus-add-msgs "%s"))'%parse_msg_type(field)[0])
+    for msg_type in sorted(set([parse_msg_type(field)[0] for field in spec.parsed_fields() if not field.is_builtin and parse_msg_type(field)[0] != spec.package])):
+        s.write('(if (not (find-package "%s"))'%msg_type.upper())
+        s.write('  (ros::roseus-add-msgs "%s"))'%msg_type)
     s.newline()
     s.newline()
 
