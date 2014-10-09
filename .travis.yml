@@ -1,0 +1,38 @@
+language:
+  - cpp
+  - python
+python:
+  - "2.7"
+compiler:
+  - gcc
+notifications:
+  email:
+    on_success: always
+    on_failure: always
+env:
+  - ROS_DISTRO=hydro
+script:
+  - export CI_SOURCE_PATH=$(pwd)
+  - export REPOSITORY_NAME=${PWD##*/}
+  - if [ ! "$ROS_PARALLEL_JOBS" ]; then export ROS_PARALLEL_JOBS="-j8 -l8";  fi
+  - echo "Testing branch $TRAVIS_BRANCH of $REPOSITORY_NAME"
+  - sudo sh -c 'echo "deb http://packages.ros.org/ros-shadow-fixed/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
+  - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-catkin
+  - sudo rosdep init
+  - rosdep update; while [ $? != 0 ]; do sleep 1; rosdep update; done
+  - mkdir -p ~/ros/ws_$REPOSITORY_NAME/src
+  - cd ~/ros/ws_$REPOSITORY_NAME/src
+  - ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
+  - git clone https://github.com/ros/std_msgs           std_msgs
+  - git clone https://github.com/ros/ros_comm           ros_comm        -b hydro-devel
+  - git clone https://github.com/ros/common_msgs        common_msgs     -b hydro-devel
+  - git clone https://github.com/ros/actionlib          actionlib       -b hydro-devel
+  - mv ros_comm/messages/ ros_comm/clients/ .
+  - rm -fr ros_comm # do not run test for ros_comm
+  - find actionlib  -name CMakeLists.txt  -exec sed -i 's@add_subdirectory(test)@#add_subdirectory(test)@' {} \;
+  - cd ..
+  - rosdep install -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
+  - source /opt/ros/$ROS_DISTRO/setup.bash
+  - catkin_make $ROS_PARALLEL_JOBS
