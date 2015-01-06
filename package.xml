@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>geneus</name>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <description>
   EusLisp ROS message and service generators.
   </description>
