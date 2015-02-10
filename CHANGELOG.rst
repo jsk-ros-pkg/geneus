@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.1 (2015-02-10)
+------------------
 * [scripts/gen_eus.py] set executable
 * Contributors: Kei Okada
 
