@@ -53,17 +53,14 @@ except ImportError:
 # Built in types
 ############################################################
 
-def is_fixnum(t):
-    return t in ['int8', 'uint8', 'int16', 'uint16']
-
 def is_integer(t):
-    return is_fixnum(t) or t in ['byte', 'char', 'int32', 'uint32', 'int64', 'uint64'] #t2 byte, char can be fixnum
+    return t in ['byte', 'char', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32', 'int64', 'uint64'] #t char/byte  deprecated alias for uint8/int8, see http://wiki.ros.org/msg#Fields
 
 def is_signed_int(t):
-    return t in ['int8', 'int16', 'int32', 'int64']
+    return t in ['byte', 'int8', 'int16', 'int32', 'int64']
 
 def is_unsigned_int(t):
-    return t in ['uint8', 'uint16', 'uint32', 'uint64']
+    return t in ['char', 'uint8', 'uint16', 'uint32', 'uint64']
 
 def is_bool(t):
     return t == 'bool'
@@ -97,9 +94,7 @@ def msg_type(f):
     return '%s::%s'%(pkg, msg)
 
 def lisp_type(t):
-    if is_fixnum(t):
-        return 'char'
-    elif is_integer(t):
+    if is_integer(t):
         return 'integer'
     elif is_bool(t):
         return 'object'
@@ -165,8 +160,8 @@ def lisp_initform(t):
     else:
         raise ValueError('%s is not a recognized primitive type'%t)
 
-NUM_BYTES = {'int8': 1, 'int16': 2, 'int32': 4, 'int64': 8,
-             'uint8': 1, 'uint16': 2, 'uint32': 4, 'uint64': 8}
+NUM_BYTES = {'byte': 1, 'int8': 1, 'int16': 2, 'int32': 4, 'int64': 8,
+             'char': 1, 'uint8': 1, 'uint16': 2, 'uint32': 4, 'uint64': 8}
              
              
 
@@ -387,11 +382,8 @@ def write_serialize_field(s, f):
             write_serialize_length(s, slot, True)
         if f.is_builtin and f.array_len:
             s.write('(dotimes (i %s)'%f.array_len)
-        elif f.is_builtin and not f.array_len and not is_fixnum(f.base_type):
+        elif f.is_builtin and not f.array_len:
             s.write('(dotimes (i (length %s))'%var)
-        elif f.is_builtin and not f.array_len and is_fixnum(f.base_type):
-            s.write('(princ %s s)'%var)
-            return
         else:
             s.write('(dolist (elem %s)'%slot)
         slot = 'elem'
@@ -456,10 +448,11 @@ def write_deserialize_bits_signed(s, v, num_bytes):
     if num_bytes in [1,2,4]:
         write_deserialize_bits(s, v, num_bytes)
     else:
+        s.write('\n', indent=False)
         s.write('#+(or :alpha :irix6 :x86_64)', indent=False)
-        s.write('(setq %s (prog1 (sys::peek buf ptr- :long) (incf ptr- 8)))\n'%v)
+        s.write(' (setf %s (prog1 (sys::peek buf ptr- :long) (incf ptr- 8)))\n'%v)
         s.write('#-(or :alpha :irix6 :x86_64)', indent=False)
-        s.write('(setq %s (let ((b0 (prog1 (sys::peek buf ptr- :integer) (incf ptr- 4)))'%v)
+        s.write(' (setf %s (let ((b0 (prog1 (sys::peek buf ptr- :integer) (incf ptr- 4)))'%v)
         s.write('             (b1 (prog1 (sys::peek buf ptr- :integer) (incf ptr- 4))))')
         s.write('         (cond ((= b1 -1) b0)')
         s.write('                ((and (= b1  0)')
@@ -478,12 +471,12 @@ def write_deserialize_builtin(s, f, v):
         s.write('(%s %s (sys::peek buf ptr- :double)) (incf ptr- 8)'%(set, v))
     elif f.base_type == 'bool':
         s.write('(%s %s (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)'%(set, v))
-    elif f.base_type in ['byte', 'char']:
-        s.write('(setq %s (sys::peek buf ptr- :char)) (incf ptr- 1)'%v)
     elif f.base_type in ['duration', 'time']:
         s.write('(send %s :sec (sys::peek buf ptr- :integer)) (incf ptr- 4)  (send %s :nsec (sys::peek buf ptr- :integer)) (incf ptr- 4)'%(v,v))
     elif is_signed_int(f.base_type):
         write_deserialize_bits_signed(s, v, NUM_BYTES[f.base_type])
+        if NUM_BYTES[f.base_type] == 1: # if signed byte, we have to convert to -128-127
+            s.write('(if (> %s 127) (%s %s (- %s 256)))'%(v,set,v,v))
     elif is_unsigned_int(f.base_type):
         write_deserialize_bits(s, v, NUM_BYTES[f.base_type])
     else:
@@ -498,14 +491,7 @@ def write_deserialize_field(s, f, pkg):
                 s.write('(dotimes (i (length %s))'%var)
                 var = '(elt %s i)'%var
             else:
-                if f.base_type in ['int8', 'uint8']:
-                    s.write('(let (n)')
-                    s.write('(setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)')
-                    s.write('(setq %s (make-array n :element-type :char))'%var)
-                    s.write('(replace %s buf :start2 ptr-) (incf ptr- (length %s))'%(var,var))
-                    s.write(')')
-                    return
-                elif is_float(f.base_type) or is_integer(f.base_type) or is_string(f.base_type):
+                if is_float(f.base_type) or is_integer(f.base_type) or is_string(f.base_type):
                     s.write('(let (n)')
                     with Indent(s):
                         s.write('(setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)')
