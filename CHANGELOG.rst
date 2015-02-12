@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2015-02-12)
+------------------
 * fix message generation for uint8(char)/int8(byte) (#4,#6)
 * Contributors: Kei Okada
 
