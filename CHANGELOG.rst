@@ -2,6 +2,11 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix message generation for uint8(char)/int8(byte) (#4,#6)
+* Contributors: Kei Okada
+
 2.0.1 (2015-02-10)
 ------------------
 * [scripts/gen_eus.py] set executable
