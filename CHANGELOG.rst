@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.1 (2015-02-21)
+------------------
 * [geneus_main.py] use rospack to find build(only package have msg/src) dependency
 * [.travis.yml] add test code to check work with roseus
 * [src/geneus/geneus_main.py] add comments
