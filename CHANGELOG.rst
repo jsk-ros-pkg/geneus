@@ -2,6 +2,14 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [geneus_main.py] use rospack to find build(only package have msg/src) dependency
+* [.travis.yml] add test code to check work with roseus
+* [src/geneus/geneus_main.py] add comments
+* fix ros::load-ros-package order by dependencies
+* Contributors: Kei Okada, Yuki Furuta
+
 2.1.0 (2015-02-12)
 ------------------
 * fix message generation for uint8(char)/int8(byte) (#4,#6)
