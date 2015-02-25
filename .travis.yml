@@ -38,8 +38,6 @@ script:
   - catkin_make $ROS_PARALLEL_JOBS
   # test for roseus
   - sudo apt-get install -qq -y ros-hydro-roseus
-  - sudo cp /opt/ros/hydro/bin/roseus /opt/ros/hydro/share/roseus/ # https://github.com/jsk-ros-pkg/jsk_roseus/pull/235
-  - sudo apt-get install -qq -y ros-hydro-angles ros-hydro-cmake-modules ros-hydro-mk ## not sure why this required and not installed
   - sudo dpkg -r --force-depends ros-hydro-geneus
   # need to use latest test codes
   - sudo wget https://raw.githubusercontent.com/jsk-ros-pkg/jsk_roseus/master/roseus/test/test-genmsg.sh -O /opt/ros/hydro/share/roseus/test/test-genmsg.sh
