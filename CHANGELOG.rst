@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.2 (2015-02-25)
+------------------
 * [.travis.yml] remove hot-fix code
 * fix not to use get_depends, which cause eerror when the package is not installed
 * [package.xml] forget to add python-rospkg
