@@ -679,6 +679,13 @@ def write_constants(s, spec):
                 s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), "t" if c.val == True else "nil"))
             else:
                 s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), c.val))
+        s.write('')
+        s.write('(defun %s::%s-to-symbol (const)'%(spec.package, spec.actual_name))
+        s.write('  (cond')
+        for c in [c for c in spec.constants if is_integer(c.type)]:
+            s.write("        ((= const %s) '%s::%s::*%s*)"%(c.val, spec.package, spec.actual_name, c.name))
+        s.write('        (t nil)))')
+        s.write('')
 
 def write_srv_component(s, spec, context, parent):
     spec.component_type='service'
