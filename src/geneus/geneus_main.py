@@ -52,26 +52,30 @@ def usage(progname):
 rp = rospkg.RosPack()
 rlist = rp.list()
 
-def package_depends(pkg, depends=[]):
+def package_depends(pkg):
+    depends = []
+    for d in package_depends_impl(pkg):
+        try:
+            p_path = rp.get_path(d)
+            if os.path.exists(os.path.join(p_path, "msg")) or os.path.exists(os.path.join(p_path, "srv")) :
+                depends.append(d)
+        except rospkg.ResourceNotFound:
+            print('[WARNING] path to %s is not found'%(pkg))
+        except Exception as e:
+            print('[WARNING] path to %s is not found'%(pkg))
+            print(e)
+    return depends
+
+def package_depends_impl(pkg, depends=[]):
     if not pkg in rlist:
         print('[WARNING] %s is not found in ROS_PACKAGE_PATH'%(pkg))
         return depends
-    if pkg in depends: # it is alredy traversed
-        return []
-    try:
-        p_path = rp.get_path(pkg)
-        if os.path.exists(os.path.join(p_path, "msg")) or os.path.exists(os.path.join(p_path, "srv")) :
-            depends.append(pkg)
-    except rospkg.ResourceNotFound:
-        print('[WARNING] path to %s is not found'%(pkg))
-        return depends
-    except Exception as e:
-        print('[WARNING] path to %s is not found'%(pkg))
-        print(e)
-        return depends
-    for p in rp.get_depends(pkg, False):
-        d = package_depends(p, depends)
-        depends = list(set(d+depends))
+
+    tmp_depends = [x for x in rp.get_depends(pkg, False) if x not in depends]
+    depends.extend(tmp_depends)
+    for p in tmp_depends:
+        package_depends_impl(p, depends)
+
     return depends
 
 def genmain(argv, progname):
