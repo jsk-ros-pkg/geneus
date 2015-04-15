@@ -36,6 +36,15 @@ script:
   - rosdep install -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - catkin_make $ROS_PARALLEL_JOBS
+  # use latest catkin (including jobserver)
+  ### before_install: # Use this to prepare the system to install prerequisites or dependencies
+  ## to avoid stty error, until catkin_tools 2.0.x (http://stackoverflow.com/questions/27969057/cant-launch-catkin-build-from-jenkins-job)
+  - sudo apt-get install -q -qq -y python-setuptools python-catkin-pkg
+  - if [ ! -e /tmp/catkin_tools ]; then (cd /tmp/; git clone -q https://github.com/catkin/catkin_tools); fi
+  - (cd /tmp/catkin_tools; sudo python setup.py --quiet install)
+  ### https://github.com/ros/catkin/pull/705
+  - if [ ! -e /tmp/catkin ]; then (cd /tmp/; git clone -q https://github.com/ros/catkin); fi
+  - (cd /tmp/catkin; sudo python setup.py --quiet install)
   # test for roseus
   - sudo apt-get install -qq -y ros-hydro-roseus
   - sudo dpkg -r --force-depends ros-hydro-geneus
