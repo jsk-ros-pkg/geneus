@@ -52,9 +52,23 @@ def usage(progname):
 rp = rospkg.RosPack()
 rlist = rp.list()
 
+def solve_order_of_depends(depends):
+    # firstly get all dependencies for the package, and then
+    # sort them to solve implicit dependencies in manifest.l
+    solved = []
+    while len(depends) > 0:
+        d = depends.pop(0)
+        unsolved = filter(lambda x: x not in solved, rp.get_depends(d, False))
+        if len(unsolved) == 0:
+            solved.append(d)
+        else:
+            depends.append(d)
+    return solved
+
 def package_depends(pkg):
     depends = []
-    for d in package_depends_impl(pkg):
+    depends_impl = package_depends_impl(pkg)
+    for d in solve_order_of_depends(depends_impl):
         try:
             p_path = rp.get_path(d)
             if os.path.exists(os.path.join(p_path, "msg")) or os.path.exists(os.path.join(p_path, "srv")) :
