@@ -42,6 +42,7 @@ import genmsg
 import genmsg.command_line
 
 import rospkg
+from catkin_pkg import package
 
 from genmsg import MsgGenerationException
 from . generate import generate_msg, generate_srv
@@ -52,13 +53,24 @@ def usage(progname):
 rp = rospkg.RosPack()
 rlist = rp.list()
 
-def solve_order_of_depends(depends):
-    # firstly get all dependencies for the package, and then
-    # sort them to solve implicit dependencies in manifest.l
+def get_depends(pkg):
+    """Get dependencies written as run_depend in package.xml"""
+    try:
+        pkg_xml_path = os.path.join(rp.get_path(pkg), 'package.xml')
+    except rospkg.ResourceNotFound:
+        return []  # skip dep which is not ROS pkg
+    depends = map(lambda x: x.name,
+                  package.parse_package(pkg_xml_path).exec_depends)
+    depends = list(set(depends))  # for duplicate
+    return depends
+
+def rearrange_depends(depends):
+    """Rearrange dependencies to solve implicit dependency for manifest.l"""
     solved = []
     while len(depends) > 0:
         d = depends.pop(0)
-        unsolved = filter(lambda x: x not in solved, rp.get_depends(d, False))
+        ros_depends = filter(lambda x: x in rlist, get_depends(d))
+        unsolved = filter(lambda x: x not in solved, ros_depends)
         if len(unsolved) == 0:
             solved.append(d)
         else:
@@ -68,10 +80,11 @@ def solve_order_of_depends(depends):
 def package_depends(pkg):
     depends = []
     depends_impl = package_depends_impl(pkg)
-    for d in solve_order_of_depends(depends_impl):
+    for d in rearrange_depends(depends_impl):
         try:
             p_path = rp.get_path(d)
-            if os.path.exists(os.path.join(p_path, "msg")) or os.path.exists(os.path.join(p_path, "srv")) :
+            if (os.path.exists(os.path.join(p_path, "msg")) or
+                    os.path.exists(os.path.join(p_path, "srv"))):
                 depends.append(d)
         except rospkg.ResourceNotFound:
             print('[WARNING] path to %s is not found'%(pkg))
@@ -84,12 +97,11 @@ def package_depends_impl(pkg, depends=[]):
     if not pkg in rlist:
         print('[WARNING] %s is not found in ROS_PACKAGE_PATH'%(pkg))
         return depends
-
-    tmp_depends = [x for x in rp.get_depends(pkg, False) if x not in depends]
+    ros_depends = filter(lambda x: x in rlist, get_depends(pkg))
+    tmp_depends = filter(lambda x: x not in depends, ros_depends)
     depends.extend(tmp_depends)
     for p in tmp_depends:
-        package_depends_impl(p, depends)
-
+        depends = package_depends_impl(p, depends)
     return depends
 
 def genmain(argv, progname):
@@ -119,7 +131,7 @@ def genmain(argv, progname):
             pkg = args[1]               # ARG_PKG
             pkg_dependences = package_depends(pkg) + args[2:]   # args[1] ARG_PKG
             # load all dependences and then load target package
-            for p in list(set(pkg_dependences)):
+            for p in pkg_dependences:
                 f.write("(ros::load-ros-package \"%s\")\n"%p)
             f.write("(ros::load-ros-package \"%s\")\n"%pkg)
             f.close()
