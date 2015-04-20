@@ -86,8 +86,10 @@ def package_depends(pkg):  # pkg is string
             print(e)
     return [p.name for n,p in topological_order.topological_order_packages(depends)]
 
-def package_depends_impl(pkg, depends=[]): # takes and returns Package object
+def package_depends_impl(pkg, depends=None): # takes and returns Package object
     global pkg_map
+    if depends is None:
+        depends = []
     if not pkg in pkg_map:
         print(terminal_color.fmt(
             '@{yellow}[WARNING] %s is not found in workspace') % (pkg))
