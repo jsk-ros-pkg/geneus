@@ -93,10 +93,8 @@ def msg_type(f):
     (pkg, msg) = parse_msg_type(f)
     return '%s::%s'%(pkg, msg)
 
-def lisp_type(t, is_array=False):
-    if t == 'uint8' and is_array:
-        return 'char'
-    elif is_integer(t):
+def lisp_type(t):
+    if is_integer(t):
         return 'integer'
     elif is_bool(t):
         return 'object'
@@ -122,7 +120,7 @@ def field_initform(f):
 
 def field_initvalue(f):
     initvalue = lisp_initvalue(f.base_type)
-    elt_type = lisp_type(f.base_type, f.is_array)
+    elt_type = lisp_type(f.base_type)
     if not is_time(f.base_type):
         elt_type = ':'+elt_type
     if f.is_array:
@@ -354,8 +352,6 @@ def write_serialize_bits_signed(s, v, num_bytes):
 def write_serialize_builtin(s, f, v):
     if f.base_type == 'string':
         write_serialize_length(s, v)
-    elif f.base_type == 'uint8' and f.is_array:
-        s.write('(princ %s s)'%v)
     elif f.base_type == 'float32':
         s.write('(sys::poke %s (send s :buffer) (send s :count) :float) (incf (stream-count s) 4)'%v)
     elif f.base_type == 'float64':
@@ -377,26 +373,23 @@ def write_serialize_field(s, f):
     s.write(';; %s _%s'%(f.type, f.name))
     slot = '_%s'%f.name
     var = slot
-    if f.is_array:
-        if is_string(f.base_type):
-            s.write('(write-long (length %s) s)'%slot)
-            s.write('(dolist (elem %s)'%slot)
-            var = 'elem'
-        elif f.base_type == 'uint8':
-            if not f.array_len:
-                write_serialize_length(s, slot, True)
+    if f.is_array and is_string(f.base_type):
+        s.write('(write-long (length %s) s)'%slot)
+        s.write('(dolist (elem %s)'%slot)
+        var = 'elem'
+    elif f.is_array:
+        if not f.array_len:
+            write_serialize_length(s, slot, True)
+        if f.is_builtin and f.array_len:
+            s.write('(dotimes (i %s)'%f.array_len)
+        elif f.is_builtin and not f.array_len:
+            s.write('(dotimes (i (length %s))'%var)
         else:
-            write_serialize_length(s, slot, f.is_array)
-            if f.is_builtin and f.array_len:
-                s.write('(dotimes (i %s)'%f.array_len)
-            elif f.is_builtin and not f.array_len:
-                s.write('(dotimes (i (length %s))'%var)
-            else:
-                s.write('(dolist (elem %s)'%slot)
-            slot = 'elem'
-            var = '(elt %s i)'%var
-            s.block_next_indent()
-            s.write('')
+            s.write('(dolist (elem %s)'%slot)
+        slot = 'elem'
+        var = '(elt %s i)'%var
+        s.block_next_indent()
+        s.write('')
 
     if f.is_builtin:
         with Indent(s):
@@ -405,7 +398,7 @@ def write_serialize_field(s, f):
         with Indent(s):
             s.write('(send %s :serialize s)'%slot)
 
-    if f.is_array and f.base_type != 'uint8':
+    if f.is_array:
         s.write('  )')
  
 def write_serialize(s, spec):
@@ -472,8 +465,6 @@ def write_deserialize_builtin(s, f, v):
     set = 'setf' if v[0] == '(' else 'setq'
     if f.base_type == 'string':
         write_deserialize_length(s,f,v)
-    elif f.base_type == 'uint8' and f.is_array:
-        pass
     elif f.base_type == 'float32':
         s.write('(%s %s (sys::peek buf ptr- :float)) (incf ptr- 4)'%(set, v))
     elif f.base_type == 'float64':
@@ -497,20 +488,10 @@ def write_deserialize_field(s, f, pkg):
     if f.is_array:
         if f.is_builtin:
             if f.array_len:
-                if f.base_type == 'uint8':
-                    s.write('(setq %s (make-array %d :element-type :char))'%(var, f.array_len))
-                    s.write('(replace %s buf :start2 ptr-) (incf ptr- (length %s))'%(var,var))
-                else:
-                    s.write('(dotimes (i (length %s))'%var)
-                    var = '(elt %s i)'%var
+                s.write('(dotimes (i (length %s))'%var)
+                var = '(elt %s i)'%var
             else:
-                if f.base_type == 'uint8':
-                    s.write('(let (n)')
-                    s.write('(setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)')
-                    s.write('(setq %s (make-array n :element-type :char))'%var)
-                    s.write('(replace %s buf :start2 ptr-) (incf ptr- (length %s))'%(var,var))
-                    s.write(')')
-                elif is_float(f.base_type) or is_integer(f.base_type) or is_string(f.base_type):
+                if is_float(f.base_type) or is_integer(f.base_type) or is_string(f.base_type):
                     s.write('(let (n)')
                     with Indent(s):
                         s.write('(setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)')
@@ -541,7 +522,7 @@ def write_deserialize_field(s, f, pkg):
         with Indent(s):
             s.write('(send %s :deserialize buf ptr-) (incf ptr- (send %s :serialization-length))'%(var, var))
 
-    if f.is_array and f.base_type != 'uint8':
+    if f.is_array:
         with Indent(s):
             if f.array_len:
                 s.write(')')
