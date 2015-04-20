@@ -41,8 +41,7 @@ import traceback
 import genmsg
 import genmsg.command_line
 
-import rospkg
-from catkin_pkg import package
+from catkin_pkg import package, packages, workspaces
 
 from genmsg import MsgGenerationException
 from . generate import generate_msg, generate_srv
@@ -50,15 +49,20 @@ from . generate import generate_msg, generate_srv
 def usage(progname):
     print("%(progname)s file(s)"%vars())
 
-rp = rospkg.RosPack()
-rlist = rp.list()
+def get_pkg_map():
+    pkg_map = {}
+    for ws in workspaces.get_spaces():
+        pkgs = packages.find_packages(ws)
+        for pkg in pkgs.values():
+            pkg_map[pkg.name] = pkg
+    return pkg_map
+
+pkg_map = get_pkg_map()
 
 def get_depends(pkg):
     """Get dependencies written as run_depend in package.xml"""
-    try:
-        pkg_xml_path = os.path.join(rp.get_path(pkg), 'package.xml')
-    except rospkg.ResourceNotFound:
-        return []  # skip dep which is not ROS pkg
+    pkg_obj = pkg_map[pkg]
+    pkg_xml_path = pkg_obj.filename
     depends = map(lambda x: x.name,
                   package.parse_package(pkg_xml_path).exec_depends)
     depends = list(set(depends))  # for duplicate
@@ -69,7 +73,7 @@ def rearrange_depends(depends):
     solved = []
     while len(depends) > 0:
         d = depends.pop(0)
-        ros_depends = filter(lambda x: x in rlist, get_depends(d))
+        ros_depends = filter(lambda x: x in pkg_map, get_depends(d))
         unsolved = filter(lambda x: x not in solved, ros_depends)
         if len(unsolved) == 0:
             solved.append(d)
@@ -82,22 +86,21 @@ def package_depends(pkg):
     depends_impl = package_depends_impl(pkg)
     for d in rearrange_depends(depends_impl):
         try:
-            p_path = rp.get_path(d)
+            pkg_obj = pkg_map[d]
+            p_path = os.path.dirname(pkg_obj.filename)
             if (os.path.exists(os.path.join(p_path, "msg")) or
                     os.path.exists(os.path.join(p_path, "srv"))):
                 depends.append(d)
-        except rospkg.ResourceNotFound:
-            print('[WARNING] path to %s is not found'%(pkg))
         except Exception as e:
             print('[WARNING] path to %s is not found'%(pkg))
             print(e)
     return depends
 
 def package_depends_impl(pkg, depends=[]):
-    if not pkg in rlist:
+    if not pkg in pkg_map:
         print('[WARNING] %s is not found in ROS_PACKAGE_PATH'%(pkg))
         return depends
-    ros_depends = filter(lambda x: x in rlist, get_depends(pkg))
+    ros_depends = filter(lambda x: x in pkg_map, get_depends(pkg))
     tmp_depends = filter(lambda x: x not in depends, ros_depends)
     depends.extend(tmp_depends)
     for p in tmp_depends:
