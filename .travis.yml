@@ -49,10 +49,11 @@ script:
   - sudo apt-get install -qq -y ros-hydro-roseus
   - sudo dpkg -r --force-depends ros-hydro-geneus
   # need to use latest test codes
-  - sudo wget https://raw.githubusercontent.com/jsk-ros-pkg/jsk_roseus/master/roseus/test/test-genmsg.sh -O /opt/ros/hydro/share/roseus/test/test-genmsg.sh
-  - sudo wget https://raw.githubusercontent.com/k-okada/jsk_roseus/fix_generate_all/roseus/scripts/generate-all-msg-srv.sh -O /opt/ros/hydro/share/roseus/scripts/generate-all-msg-srv.sh
   - rm -fr devel build src/*
   - cd src
+  - git clone http://github.com/jsk-ros-pkg/jsk_roseus /tmp/jsk_roseus
+  - cp -r /tmp/jsk_roseus/roseus ./
+  #- sudo wget https://raw.githubusercontent.com/k-okada/jsk_roseus/fix_generate_all/roseus/scripts/generate-all-msg-srv.sh -O /opt/ros/hydro/share/roseus/scripts/generate-all-msg-srv.sh
   - ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
   - cd ..
   - source /opt/ros/$ROS_DISTRO/setup.bash
