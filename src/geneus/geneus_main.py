@@ -41,7 +41,7 @@ import traceback
 import genmsg
 import genmsg.command_line
 
-from catkin_pkg import package, packages, workspaces
+from catkin_pkg import package, packages, workspaces, topological_order
 
 from genmsg import MsgGenerationException
 from . generate import generate_msg, generate_srv
@@ -68,33 +68,20 @@ def get_depends(pkg):
     depends = list(set(depends))  # for duplicate
     return depends
 
-def rearrange_depends(depends):
-    """Rearrange dependencies to solve implicit dependency for manifest.l"""
-    solved = []
-    while len(depends) > 0:
-        d = depends.pop(0)
-        ros_depends = filter(lambda x: x in pkg_map, get_depends(d))
-        unsolved = filter(lambda x: x not in solved, ros_depends)
-        if len(unsolved) == 0:
-            solved.append(d)
-        else:
-            depends.append(d)
-    return solved
-
 def package_depends(pkg):
-    depends = []
+    depends = {}
     depends_impl = package_depends_impl(pkg)
-    for d in rearrange_depends(depends_impl):
+    for d in depends_impl:
         try:
             pkg_obj = pkg_map[d]
             p_path = os.path.dirname(pkg_obj.filename)
             if (os.path.exists(os.path.join(p_path, "msg")) or
                     os.path.exists(os.path.join(p_path, "srv"))):
-                depends.append(d)
+                depends[d] = pkg_obj
         except Exception as e:
             print('[WARNING] path to %s is not found'%(pkg))
             print(e)
-    return depends
+    return [p.name for n,p in topological_order.topological_order_packages(depends)]
 
 def package_depends_impl(pkg, depends=[]):
     if not pkg in pkg_map:
