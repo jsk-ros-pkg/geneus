@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.0 (2015-04-21)
+------------------
 
 * [generate.py] load roseus-add-msgs for srv too
 * [geneus_main.py] add timestamp message to manifest.l
