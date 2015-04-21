@@ -244,7 +244,8 @@ def write_begin(s, spec, is_service=False):
     s.newline()
 
 def write_include(s, spec, is_srv=False):
-    s.write(';;//! \\htmlinclude %s.msg.html'%spec.actual_name, newline=False) # t2
+    if not is_srv:
+        s.write(';;//! \\htmlinclude %s.msg.html'%spec.actual_name, newline=False) # t2
     for msg_type in sorted(set([parse_msg_type(field)[0] for field in spec.parsed_fields() if not field.is_builtin and parse_msg_type(field)[0] != spec.package])):
         s.write('(if (not (find-package "%s"))'%msg_type.upper())
         s.write('  (ros::roseus-add-msgs "%s"))'%msg_type)
@@ -801,6 +802,8 @@ def generate_srv_from_spec(msg_context, spec, search_path, output_dir, package, 
     io = StringIO()
     s = IndentedWriter(io)
     write_begin(s, spec, True)
+    write_include(s, spec.request, is_srv=True)
+    write_include(s, spec.response, is_srv=True)
     spec.request.actual_name='%sRequest'%spec.short_name
     spec.response.actual_name='%sResponse'%spec.short_name
     write_srv_component(s, spec.request, msg_context, spec)
