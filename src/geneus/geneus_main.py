@@ -68,7 +68,7 @@ def get_depends(pkg):
     depends = list(set(depends))  # for duplicate
     return depends
 
-def package_depends(pkg):
+def package_depends(pkg):  # pkg is string
     depends = {}
     depends_impl = package_depends_impl(pkg)
     for d in depends_impl:
@@ -83,9 +83,9 @@ def package_depends(pkg):
             print(e)
     return [p.name for n,p in topological_order.topological_order_packages(depends)]
 
-def package_depends_impl(pkg, depends=[]):
+def package_depends_impl(pkg, depends=[]): # takes and returns Package object
     if not pkg in pkg_map:
-        print('[WARNING] %s is not found in ROS_PACKAGE_PATH'%(pkg))
+        print('[WARNING] %s is not found in worksspace'%(pkg))
         return depends
     ros_depends = filter(lambda x: x in pkg_map, get_depends(pkg))
     tmp_depends = filter(lambda x: x not in depends, ros_depends)
