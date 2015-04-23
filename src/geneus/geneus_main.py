@@ -40,6 +40,7 @@ import sys
 import traceback
 import genmsg
 import genmsg.command_line
+from catkin import terminal_color
 
 from catkin_pkg import package, packages, workspaces, topological_order
 
@@ -80,14 +81,16 @@ def package_depends(pkg):  # pkg is string
                     os.path.exists(os.path.join(p_path, "srv"))):
                 depends[d] = pkg_obj
         except Exception as e:
-            print('[WARNING] path to %s is not found'%(pkg))
+            print(terminal_color.fmt(
+                '@{yellow}[WARNING] path to %s is not found') % (pkg))
             print(e)
     return [p.name for n,p in topological_order.topological_order_packages(depends)]
 
 def package_depends_impl(pkg, depends=[]): # takes and returns Package object
     global pkg_map
     if not pkg in pkg_map:
-        print('[WARNING] %s is not found in worksspace'%(pkg))
+        print(terminal_color.fmt(
+            '@{yellow}[WARNING] %s is not found in workspace') % (pkg))
         return depends
     ros_depends = filter(lambda x: x in pkg_map, get_depends(pkg))
     tmp_depends = filter(lambda x: x not in depends, ros_depends)
