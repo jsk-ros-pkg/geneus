@@ -90,7 +90,7 @@ def package_depends_impl(pkg, depends=[]): # takes and returns Package object
     global pkg_map
     if not pkg in pkg_map:
         print(terminal_color.fmt(
-            '@{yellow}[WARNING] %s is not found in worksspace') % (pkg))
+            '@{yellow}[WARNING] %s is not found in workspace') % (pkg))
         return depends
     ros_depends = filter(lambda x: x in pkg_map, get_depends(pkg))
     tmp_depends = filter(lambda x: x not in depends, ros_depends)
