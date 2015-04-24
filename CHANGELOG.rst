@@ -2,6 +2,14 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [geneus_main.py] fix when pkg_map does not have geneus
+* [geneus_main.py] Fix unexpected function resposes caused by python gabage collection algorightm
+* [geneus_main.py] fix typo for warning
+* [geneus_main.py] Yellow color for warnings
+* Contributors: Kei Okada, Kentaro Wada
+
 2.2.0 (2015-04-21)
 ------------------
 
