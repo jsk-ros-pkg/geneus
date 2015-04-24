@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.1 (2015-04-24)
+------------------
 * [geneus_main.py] fix when pkg_map does not have geneus
 * [geneus_main.py] Fix unexpected function resposes caused by python gabage collection algorightm
 * [geneus_main.py] fix typo for warning
