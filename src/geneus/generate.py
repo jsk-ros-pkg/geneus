@@ -665,6 +665,7 @@ def write_provide(s, msg_context, spec):
 def write_constants(s, spec):
     if spec.constants:
         for c in spec.constants:
+            s.write('(intern "*%s*" (find-package "%s::%s"))'%(c.name.upper(), spec.package.upper(), spec.actual_name.upper()))
             s.write('(shadow \'*%s* (find-package "%s::%s"))'%(c.name.upper(), spec.package.upper(), spec.actual_name.upper()))
             if c.type == 'string':
                 s.write('(defconstant %s::%s::*%s* "%s")'%(spec.package, spec.actual_name, c.name.upper(), c.val.replace('"', '\\"')))
