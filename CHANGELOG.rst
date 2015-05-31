@@ -2,6 +2,14 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [.travis.yml] add pr2eus test
+* [src/geneus/generate.py] make intern before shadow, see https://github.com/jsk-ros-pkg/jsk_roseus/issues/313
+* [geneus_main.py] has_key -> in
+* [geneus_main.py] generate message even if geneus is not found
+* Contributors: Kei Okada, Kentaro Wada
+
 2.2.1 (2015-04-24)
 ------------------
 * [geneus_main.py] fix when pkg_map does not have geneus
