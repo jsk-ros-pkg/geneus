@@ -62,6 +62,8 @@ pkg_map = None
 def get_depends(pkg):
     """Get dependencies written as run_depend in package.xml"""
     global pkg_map
+    if pkg_map is None:
+        pkg_map = get_pkg_map()
     pkg_obj = pkg_map[pkg]
     pkg_xml_path = pkg_obj.filename
     depends = map(lambda x: x.name,
@@ -71,6 +73,8 @@ def get_depends(pkg):
 
 def package_depends(pkg):  # pkg is string
     global pkg_map
+    if pkg_map is None:
+        pkg_map = get_pkg_map()
     depends = {}
     depends_impl = package_depends_impl(pkg)
     for d in depends_impl:
@@ -87,9 +91,11 @@ def package_depends(pkg):  # pkg is string
     return [p.name for n,p in topological_order.topological_order_packages(depends)]
 
 def package_depends_impl(pkg, depends=None): # takes and returns Package object
-    global pkg_map
     if depends is None:
         depends = []
+    global pkg_map
+    if pkg_map is None:
+        pkg_map = get_pkg_map()
     if not pkg in pkg_map:
         print(terminal_color.fmt(
             '@{yellow}[WARNING] %s is not found in workspace') % (pkg))
@@ -121,8 +127,10 @@ def genmain(argv, progname):
                 if not os.path.exists(options.outdir):
                     raise
         if options.manifest:
-            global pkg_map
             import datetime
+            global pkg_map
+            if pkg_map is None:
+                pkg_map = get_pkg_map()
             pkg_map = get_pkg_map()
             f = open(options.outdir+'/manifest.l', 'w+')
             f.write(";;\n")
