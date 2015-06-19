@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.3 (2015-06-19)
+------------------
 * [src/geneus/geneus_main.py] Call get_pkg_map if pkg_map is None
 * Contributors: Kentaro Wada
 
