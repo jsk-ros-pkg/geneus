@@ -127,7 +127,7 @@ def field_initvalue(f):
         elt_type = ':'+elt_type
     if f.is_array:
         len = f.array_len or 0
-        if f.is_builtin and not is_string(f.base_type):
+        if f.is_builtin and not is_string(f.base_type) and not is_time(f.base_type):
             return '(make-array %s :initial-element %s :element-type %s)'%(len, initvalue, elt_type)
         else:
             return '(let (r) (dotimes (i %s) (push %s r)) r)'%(len, initvalue)
