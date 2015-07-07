@@ -508,12 +508,14 @@ def write_deserialize_field(s, f, pkg):
                 s.write('(dotimes (i (length %s))'%var)
                 var = '(elt %s i)'%var
             else:
-                if is_float(f.base_type) or is_integer(f.base_type) or is_string(f.base_type):
+                if is_float(f.base_type) or is_integer(f.base_type) or is_string(f.base_type) or is_bool(f.base_type):
                     s.write('(let (n)')
                     with Indent(s):
                         s.write('(setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)')
                         if is_string(f.base_type):
                             s.write('(setq %s (make-list n))'%var)
+                        elif is_bool(f.base_type):
+                            s.write('(setq %s (make-array n))'%var)
                         else:
                             s.write('(setq %s (instantiate %s-vector n))'%(var, lisp_type(f.base_type, f.is_array)))
                         s.write('(dotimes (i n)')
