@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.4 (2015-07-08)
+------------------
 * [src/geneus/generate.py] bool array is list, not lisp-array
 * [src/geneus/generate.py] use list for time type object
 * src/geneus/generate.py fix for variable bool array case, https://github.com/jsk-ros-pkg/jsk_roseus/pull/330
