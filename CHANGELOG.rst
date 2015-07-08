@@ -2,6 +2,14 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [src/geneus/generate.py] bool array is list, not lisp-array
+* [src/geneus/generate.py] use list for time type object
+* src/geneus/generate.py fix for variable bool array case, https://github.com/jsk-ros-pkg/jsk_roseus/pull/330
+* [package.xml] Now doesn't depend on python-rospkg
+* Contributors: Kei Okada, Kentaro Wada
+
 2.2.3 (2015-06-19)
 ------------------
 * [src/geneus/geneus_main.py] Call get_pkg_map if pkg_map is None
