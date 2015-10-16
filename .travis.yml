@@ -57,7 +57,7 @@ script:
   - catkin build
   - source devel/setup.bash
   - rostest pr2eus pr2-ri-test-simple.launch
-  - rostest pr2eus default-ri-test.launch
+  - rostest pr2eus default-ri-test.test
   - rostest pr2eus pr2eus-test.launch
 after_failure:
   - rostest -t roseus test-genmsg.catkin.test
