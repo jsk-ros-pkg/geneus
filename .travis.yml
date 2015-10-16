@@ -1,3 +1,5 @@
+sudo: required
+dist: trusty
 language:
   - cpp
   - python
@@ -10,7 +12,7 @@ notifications:
     on_success: always
     on_failure: always
 env:
-  - ROS_DISTRO=hydro
+  - ROS_DISTRO=indigo
 script:
   - export CI_SOURCE_PATH=$(pwd)
   - export REPOSITORY_NAME=${PWD##*/}
@@ -26,9 +28,9 @@ script:
   - cd ~/ros/ws_$REPOSITORY_NAME/src
   - ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
   - git clone https://github.com/ros/std_msgs           std_msgs
-  - git clone https://github.com/ros/ros_comm           ros_comm        -b hydro-devel
-  - git clone https://github.com/ros/common_msgs        common_msgs     -b hydro-devel
-  - git clone https://github.com/ros/actionlib          actionlib       -b hydro-devel
+  - git clone https://github.com/ros/ros_comm           ros_comm        -b ${ROS_DISTRO}-devel
+  - git clone https://github.com/ros/common_msgs        common_msgs     -b ${ROS_DISTRO}-devel
+  - git clone https://github.com/ros/actionlib          actionlib       -b ${ROS_DISTRO}-devel
   - mv ros_comm/messages/ ros_comm/clients/ .
   - rm -fr ros_comm # do not run test for ros_comm
   - find actionlib  -name CMakeLists.txt  -exec sed -i 's@add_subdirectory(test)@#add_subdirectory(test)@' {} \;
@@ -36,18 +38,9 @@ script:
   - rosdep install -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - catkin_make $ROS_PARALLEL_JOBS
-  # use latest catkin (including jobserver)
-  ### before_install: # Use this to prepare the system to install prerequisites or dependencies
-  ## to avoid stty error, until catkin_tools 2.0.x (http://stackoverflow.com/questions/27969057/cant-launch-catkin-build-from-jenkins-job)
-  - sudo apt-get install -q -qq -y python-setuptools python-catkin-pkg
-  - if [ ! -e /tmp/catkin_tools ]; then (cd /tmp/; git clone -q https://github.com/catkin/catkin_tools); fi
-  - (cd /tmp/catkin_tools; sudo python setup.py --quiet install)
-  ### https://github.com/ros/catkin/pull/705
-  - if [ ! -e /tmp/catkin ]; then (cd /tmp/; git clone -q https://github.com/ros/catkin); fi
-  - (cd /tmp/catkin; sudo python setup.py --quiet install)
   # test for roseus
-  - sudo apt-get install -qq -y ros-hydro-roseus
-  - sudo dpkg -r --force-depends ros-hydro-geneus
+  - sudo apt-get install -qq -y ros-${ROS_DISTRO}-roseus
+  - sudo dpkg -r --force-depends ros-${ROS_DISTRO}-geneus
   # need to use latest test codes
   - rm -fr devel build src/*
   - cd src
