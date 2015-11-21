@@ -55,7 +55,11 @@ def get_pkg_map():
     for ws in workspaces.get_spaces():
         pkgs = packages.find_packages(ws)
         for pkg in pkgs.values():
-            pkg_map[pkg.name] = pkg
+            # packages.find_packages(workspaces.get_spaces()) returns package in high-priority-first-order, so we should not overwirte package map which is already found
+            # https://github.com/ros-infrastructure/catkin_pkg/blob/fa4b136b16e2d2886ab97257684f6bff243edefb/src/catkin_pkg/workspaces.py#L43
+            # https://github.com/ros-infrastructure/catkin_pkg/blob/fa4b136b16e2d2886ab97257684f6bff243edefb/src/catkin_pkg/packages.py#L71
+            if pkg.name not in pkg_map:
+                pkg_map[pkg.name] = pkg
     return pkg_map
 
 pkg_map = None
