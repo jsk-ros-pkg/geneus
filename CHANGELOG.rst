@@ -2,6 +2,29 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add status badge to the README.md (`#41 <https://github.com/jsk-ros-pkg/geneus/issues/41>`_ )
+* .travis.yml: use before_script and script
+* .travis.yml: rosdep install with -q (quiet)
+
+* Use package.xml in workspace, not deb installed one (`#42 <https://github.com/jsk-ros-pkg/geneus/issues/42>`_ )
+  
+  * do not overwrite pkg_map
+  * add test code to check `#42 <https://github.com/jsk-ros-pkg/geneus/issues/42>`_ isseus
+  * geneus_main.py: fix THIS FILE IS AUTOMAATICALLY GENERATED... comment
+  * use latest released code
+
+* use indiog/14.04 on travis test `#40 <https://github.com/jsk-ros-pkg/geneus/issues/40>`_ 
+
+  * add ppa:openrave/release
+  * default-ri-test.launch ->default-ri-test.test
+  * install default python, use language:generic
+  * ros_comm message has been move to ros_comm_msgs
+  * use indigo/14.04
+
+* Contributors: Kei Okada
+
 2.2.4 (2015-07-08)
 ------------------
 * [src/geneus/generate.py] bool array is list, not lisp-array
