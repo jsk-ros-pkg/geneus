@@ -38,6 +38,7 @@ script:
   - rm -fr devel build src/*
   - cd src
   - git clone http://github.com/jsk-ros-pkg/jsk_roseus /tmp/jsk_roseus
+  - (cd /tmp/jsk_roseus; git checkout `git describe --abbrev=0 --tags`)
   - cp -r /tmp/jsk_roseus/roseus ./
   #- sudo wget https://raw.githubusercontent.com/k-okada/jsk_roseus/fix_generate_all/roseus/scripts/generate-all-msg-srv.sh -O /opt/ros/hydro/share/roseus/scripts/generate-all-msg-srv.sh
   - ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
@@ -50,6 +51,7 @@ script:
   - rostest roseus test-genmsg-oneworkspace.catkin.launch
   # check pr2eus
   - git clone http://github.com/jsk-ros-pkg/jsk_pr2eus src/jsk_pr2eus
+  - (cd src/jsk_pr2eus; git checkout `git describe --abbrev=0 --tags`)
   - sudo apt-get -qq -f install
   - rosdep install -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
   - sudo dpkg -r --force-depends ros-hydro-geneus
