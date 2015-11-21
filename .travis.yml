@@ -45,8 +45,11 @@ script:
   - cd ..
   # check roseus
   - source /opt/ros/$ROS_DISTRO/setup.bash
+  - rm -fr build devel # need to clean up to check #42 case
   - catkin build
   - source devel/setup.bash
+  - cat devel/share/roseus/ros/roseus/manifest.l
+  - grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel/share/roseus/ros/roseus/manifest.l; [ "$?" == 1 ]; # check https://github.com/jsk-ros-pkg/geneus/pull/42
   - rostest roseus test-genmsg.catkin.test
   - rostest roseus test-genmsg-oneworkspace.catkin.launch
   # check pr2eus
