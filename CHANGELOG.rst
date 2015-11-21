@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.5 (2015-11-21)
+------------------
 * add status badge to the README.md (`#41 <https://github.com/jsk-ros-pkg/geneus/issues/41>`_ )
 * .travis.yml: use before_script and script
 * .travis.yml: rosdep install with -q (quiet)
