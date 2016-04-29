@@ -6,7 +6,13 @@ notifications:
     on_success: always
     on_failure: always
 env:
-  - ROS_DISTRO=indigo
+  matrix:
+    - ROS_DISTRO=indigo BUILDER='catkin_make'
+    - ROS_DISTRO=indigo BUILDER='catkin_make_isolated'
+    - ROS_DISTRO=indigo BUILDER='catkin build'
+    - ROS_DISTRO=jade   BUILDER='catkin_make'
+    - ROS_DISTRO=jade   BUILDER='catkin_make_isolated'
+    - ROS_DISTRO=jade   BUILDER='catkin build'
 before_script:
   - export CI_SOURCE_PATH=$(pwd)
   - export REPOSITORY_NAME=${PWD##*/}
@@ -22,16 +28,18 @@ before_script:
   - mkdir -p ~/ros/ws_$REPOSITORY_NAME/src
   - cd ~/ros/ws_$REPOSITORY_NAME/src
   - ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
-  - git clone https://github.com/ros/std_msgs           std_msgs
-  - git clone https://github.com/ros/ros_comm_msgs      ros_comm_msgs   -b ${ROS_DISTRO}-devel
+  - git clone https://github.com/ros/std_msgs           std_msgs        -b groovy-devel
+  - git clone https://github.com/ros/ros_comm_msgs      ros_comm_msgs   -b indigo-devel # jade uses indigo-devel
   - git clone https://github.com/ros/common_msgs        common_msgs     -b ${ROS_DISTRO}-devel
-  - git clone https://github.com/ros/actionlib          actionlib       -b ${ROS_DISTRO}-devel
+  - git clone https://github.com/ros/actionlib          actionlib       -b indigo-devel  # jade uses indigo-devel
   - find actionlib  -name CMakeLists.txt  -exec sed -i 's@add_subdirectory(test)@#add_subdirectory(test)@' {} \;
   - cd ..
   - rosdep install -q -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
 script:
   - source /opt/ros/$ROS_DISTRO/setup.bash
-  - catkin_make $ROS_PARALLEL_JOBS
+  # on indigo we have to compile geneus before other packages..
+  - if [ ${BUILDER} == "catkin_make" ]; then ${BUILDER} geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+  - ${BUILDER} $ROS_PARALLEL_JOBS
   # test for roseus
   - sudo apt-get install -qq -y ros-${ROS_DISTRO}-roseus
   - sudo dpkg -r --force-depends ros-${ROS_DISTRO}-geneus
@@ -47,10 +55,14 @@ script:
   # check roseus
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - rm -fr build devel # need to clean up to check #42 case
-  - catkin build
-  - source devel/setup.bash
-  - cat devel/share/roseus/ros/roseus/manifest.l
-  - grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel/share/roseus/ros/roseus/manifest.l; [ "$?" == 1 ]; # check https://github.com/jsk-ros-pkg/geneus/pull/42
+  - if [ ${BUILDER} == "catkin_make" ]; then ${BUILDER} geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+  - ${BUILDER}
+  - source devel*/setup.bash
+  - if [ ${BUILDER} == "catkin_make_isolated" ] ; then cat devel_isolated/roseus/share/roseus/ros/roseus/manifest.l; fi
+  - if [ ${BUILDER} != "catkin_make_isolated" ] ; then cat devel/share/roseus/ros/roseus/manifest.l; fi
+  # check https://github.com/jsk-ros-pkg/geneus/pull/42
+  - if [ ${BUILDER} == "catkin_make_isolated" ] ; then grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel_isolated/roseus/share/roseus/ros/roseus/manifest.l; [ "$?" == 1 ]; fi
+  - if [ ${BUILDER} != "catkin_make_isolated" ] ; then grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel/share/roseus/ros/roseus/manifest.l; [ "$?" == 1 ]; fi
   - rostest roseus test-genmsg.catkin.test
   - rostest roseus test-genmsg-oneworkspace.catkin.launch
   # check pr2eus
@@ -58,11 +70,12 @@ script:
   - (cd src/jsk_pr2eus; git checkout `git describe --abbrev=0 --tags`)
   - sudo apt-get -qq -f install
   - rosdep install -q -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
-  - sudo dpkg -r --force-depends ros-hydro-geneus
-  - catkin clean -a
+  - sudo dpkg -r --force-depends ros-${ROS_DISTRO}-geneus
+  - rm -fr build devel install logs .catkin*
   - source /opt/ros/$ROS_DISTRO/setup.bash
-  - catkin build
-  - source devel/setup.bash
+  - if [ ${BUILDER} == "catkin_make" ]; then ${BUILDER} geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+  - ${BUILDER}
+  - source devel*/setup.bash
   - rostest pr2eus pr2-ri-test-simple.launch
   - rostest pr2eus default-ri-test.test
   - rostest pr2eus pr2eus-test.launch
