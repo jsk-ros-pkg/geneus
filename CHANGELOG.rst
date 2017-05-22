@@ -2,6 +2,17 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [geneus_main.py] suppress warning (`#52 <https://github.com/jsk-ros-pkg/geneus/issues/52>`_)
+  * [geneus_main.py] do not write timestamp that makes different md5
+  * [geneus_main.py] write depends by alphabetical order in manifest.l
+* [.travis.yml] : add jade test  (`#49 <https://github.com/jsk-ros-pkg/geneus/issues/49>`_)
+  * .travis.yml: add BUILDER=catkin_make_isolated
+  * .travis.yml: add indigo/jade and catkin_make/catkin test
+* [geneus_main.py]: add comment : 152683d depends on comment line (`#44 <https://github.com/jsk-ros-pkg/geneus/issues/44>`_)
+* Contributors: Yuki Furuta, Kei Okada
+
 2.2.5 (2015-11-21)
 ------------------
 * add status badge to the README.md (`#41 <https://github.com/jsk-ros-pkg/geneus/issues/41>`_ )
