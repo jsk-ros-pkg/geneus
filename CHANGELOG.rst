@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.6 (2017-05-22)
+------------------
 * [geneus_main.py] suppress warning (`#52 <https://github.com/jsk-ros-pkg/geneus/issues/52>`_)
   * [geneus_main.py] do not write timestamp that makes different md5
   * [geneus_main.py] write depends by alphabetical order in manifest.l
