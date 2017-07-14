@@ -1,6 +1,6 @@
 sudo: required
 dist: trusty
-language: generic
+language: c++
 notifications:
   email:
     on_success: always
