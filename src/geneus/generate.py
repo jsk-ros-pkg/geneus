@@ -264,8 +264,10 @@ def write_slot_argument(s, field):
         s.write('((:%s __%s) %s)'%(var, var, field_initvalue(field)))
     else:
         if field.is_array:
-            len = field.array_len or 0
-            s.write('((:%s __%s) (let (r) (dotimes (i %s) (push (instance %s :init) r)) r))'%(var, var, len, field_type(field))) ## FIX??? need to use len = f.array_len or 0
+            if field.array_len:
+                s.write('((:%s __%s) (let (r) (dotimes (i %s) (push (instance %s :init) r)) r))'%(var, var, field.array_len, field_type(field)))
+            else:
+                s.write('((:%s __%s) ())'%(var, var))
         else:
             s.write('((:%s __%s) (instance %s :init))'%(var, var, field_type(field)))
 
