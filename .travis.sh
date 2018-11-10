@@ -13,6 +13,8 @@ function error {
 trap error ERR
 
 apt-get update
+# https://stackoverflow.com/questions/44331836/apt-get-install-tzdata-noninteractive
+DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 apt-get install -y sudo software-properties-common git wget sed gcc g++
 
 echo "Testing branch $TRAVIS_BRANCH of $REPOSITORY_NAME"
