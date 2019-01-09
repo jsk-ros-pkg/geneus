@@ -233,6 +233,101 @@
     (assert (eq (send b :data) 1))
     ))
 
+;; locate geneus/test/test.msg
+(make-package "GENEUS")
+(load "package://geneus/test/test.l")
+(deftest test-constant
+  (let (tmp)
+    (setq tmp geneus::test::*true_flag*)
+    (format *error-output* "geneus::test::*true_flag* is ~A~%" tmp)
+    (assert (eq tmp t))
+    (setq tmp geneus::test::*false_flag*)
+    (format *error-output* "geneus::test::*false_flag* is ~A~%" tmp)
+    (assert (eq tmp nil))
+    (setq tmp geneus::test::*true_flag_symbol*)
+    (format *error-output* "geneus::test::*true_flag_symbol* is ~A~%" tmp)
+    (assert (eq tmp t))
+    (setq tmp geneus::test::*false_flag_symbol*)
+    (format *error-output* "geneus::test::*false_flag_symbol* is ~A~%" tmp)
+    (assert (eq tmp nil))
+    (setq tmp geneus::test::*int_1*)
+    (format *error-output* "geneus::test::*int_1* is ~A~%" tmp)
+    (assert (= tmp -1))
+    (setq tmp geneus::test::*int_8*)
+    (format *error-output* "geneus::test::*int_8* is ~A~%" tmp)
+    (assert (= tmp 8))
+    (setq tmp geneus::test::*float_12*)
+    (format *error-output* "geneus::test::*float_12* is ~A~%" tmp)
+    (assert (eps= tmp -1.2))
+    (setq tmp geneus::test::*float_89*)
+    (format *error-output* "geneus::test::*float_89* is ~A~%" tmp)
+    (assert (eps= tmp 8.9))
+    (setq tmp geneus::test::*string_1*)
+    (format *error-output* "geneus::test::*string_1* is ~A~%" tmp)
+    (assert (string= tmp "string"))
+    (setq tmp geneus::test::*string_2*)
+    (format *error-output* "geneus::test::*string_2* is ~A~%" tmp)
+    (assert (string= tmp "string"))
+    (setq tmp geneus::test::*string_3*)
+    (format *error-output* "geneus::test::*string_3* is ~A~%" tmp)
+    (assert (string= tmp "string string"))
+    (setq tmp geneus::test::*string_4*)
+    (format *error-output* "geneus::test::*string_4* is ~A~%" tmp)
+#|
+http://wiki.ros.org/msg#Constants says
+```
+string EXAMPLE="#comments" are ignored, and leading and trailing whitespace removed
+
+string constants are assigned the value of everything to the right of the equals sign, with leading and trailing whitespace removed. As such, you cannot leave a comment on a string constant definition.
+```
+
+```
+$ cat test.msg
+bool TRUE_FLAG=1
+bool FALSE_FLAG=0
+bool TRUE_FLAG_SYMBOL=True
+bool FALSE_FLAG_SYMBOL=False
+int8 INT_1=-1
+int8 INT_8=8
+float32 FLOAT_12=-1.2
+float32 FLOAT_89=8.9
+string STRING_1=string
+string STRING_2=  string
+string STRING_3=  string string
+string STRING_4=  string ## string
+string STRING_5=#string
+string STRING_6='#string'
+string STRING_7="#string"
+$ rosrun genpy gen_python.py `rospack find geneus`/test/test.msg -Igeneus:`rospack find geneus`/test -p geneus -o `rospack find geneus`/test
+$ ipython
+In [1]: import _test                                                                                                                                  In [2]: _test.test.STRING_1
+Out[2]: 'string'
+In [3]: _test.test.STRING_2
+Out[3]: 'string'
+In [4]: _test.test.STRING_3
+Out[4]: 'string string'
+In [5]: _test.test.STRING_4
+Out[5]: 'string ## string'
+In [6]: _test.test.STRING_5
+Out[6]: '#string'
+In [7]: _test.test.STRING_6
+Out[7]: "'#string'"
+In [8]: _test.test.STRING_7
+Out[8]: '"#string"'
+```
+|#
+    (assert (string= tmp "string ## string"))
+    (setq tmp geneus::test::*string_5*)
+    (format *error-output* "geneus::test::*string_5* is ~A~%" tmp)
+    (assert (string= tmp "#string"))
+    (setq tmp geneus::test::*string_6*)
+    (format *error-output* "geneus::test::*string_6* is ~A~%" tmp)
+    (assert (string= tmp "'#string'"))
+    (setq tmp geneus::test::*string_7*)
+    (format *error-output* "geneus::test::*string_7* is ~A~%" tmp)
+    (assert (string= tmp "\"#string\""))
+    ))
+
 (ros::roseus "test_geneus")
 (run-all-tests)
 (exit)
