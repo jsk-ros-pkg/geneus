@@ -65,6 +65,7 @@ if [ ${BUILDER} != "catkin_make_isolated" ] ; then cat devel/share/roseus/ros/ro
 ## check https://github.com/jsk-ros-pkg/geneus/pull/42
 if [ ${BUILDER} == "catkin_make_isolated" ] ; then [ `grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel_isolated/roseus/share/roseus/ros/roseus/manifest.l` != 1 ]; fi
 if [ ${BUILDER} != "catkin_make_isolated" ] ; then [ `grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel/share/roseus/ros/roseus/manifest.l` != 1 ]; fi
+rostest geneus test-geneus.test
 rostest roseus test-genmsg.catkin.test
 rostest roseus test-genmsg-oneworkspace.catkin.launch
 ## check pr2eus
