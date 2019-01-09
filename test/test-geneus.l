@@ -13,7 +13,6 @@
 (defun ros::ros-error (&rest args)
   (apply #'ros::ros-error-org args)
   (error (apply #'format nil args)))
-(ros::load-ros-manifest "euslisp")
 
 ;;;
 ;;;
