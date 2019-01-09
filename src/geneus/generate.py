@@ -307,9 +307,12 @@ def write_accessors(s, spec):
             s.write('(:%s'%field.name)
             var = '_%s'%field.name
             with Indent(s, inc=1):
-                if field.is_builtin:
+                if field.is_builtin and field.type == "bool":
                     s.write('(&optional _%s)'%var)
                     s.write('(if _%s (setq %s _%s)) %s)'%(var,var,var,var))
+                elif field.type == "bool":
+                    s.write('(&optional (_%s :null))'%var)
+                    s.write('(if (not (eq _%s :null)) (setq %s _%s)) %s)'%(var,var,var,var))
                 else:
                     s.write('(&rest _%s)'%var)
                     s.write('(if (keywordp (car _%s))'%var)
