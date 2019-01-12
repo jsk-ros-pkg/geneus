@@ -68,6 +68,7 @@ cd ..
 source /opt/ros/$ROS_DISTRO/setup.bash
 rm -fr build devel # need to clean up to check #42 case
 if [ "${BUILDER}" == "catkin_make" ]; then ${BUILDER} --only-pkg-with-deps geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+if [ "${BUILDER}" == "catkin build" ]; then ${BUILDER} geneus $ROS_PARALLEL_JOBS; source devel/setup.bash; fi
 ${BUILDER}
 source devel*/setup.bash
 if [ "${BUILDER}" == "catkin_make_isolated" ] ; then cat devel_isolated/roseus/share/roseus/ros/roseus/manifest.l; fi
@@ -87,6 +88,7 @@ sudo dpkg -r --force-depends ros-${ROS_DISTRO}-geneus
 rm -fr build devel install logs .catkin*
 source /opt/ros/$ROS_DISTRO/setup.bash
 if [ "${BUILDER}" == "catkin_make" ]; then ${BUILDER} --only-pkg-with-deps geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+if [ "${BUILDER}" == "catkin build" ]; then ${BUILDER} geneus $ROS_PARALLEL_JOBS; source devel/setup.bash; fi
 ${BUILDER}
 source devel*/setup.bash
 rostest pr2eus default-ri-test.test
