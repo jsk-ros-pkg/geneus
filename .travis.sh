@@ -58,6 +58,8 @@ cd src
 git clone http://github.com/jsk-ros-pkg/jsk_roseus /tmp/jsk_roseus
 (cd /tmp/jsk_roseus; git checkout `git describe --abbrev=0 --tags`)
 cp -r /tmp/jsk_roseus/roseus ./
+# clone std_msgs which is required by test codes
+git clone https://github.com/ros-gbp/std_msgs-release.git       std_msgs -b release/${ROS_DISTRO}/std_msgs
 # copy geneus package
 ##- sudo wget https://raw.githubusercontent.com/k-okada/jsk_roseus/fix_generate_all/roseus/scripts/generate-all-msg-srv.sh -O /opt/ros/hydro/share/roseus/scripts/generate-all-msg-srv.sh
 ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
