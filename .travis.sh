@@ -24,6 +24,9 @@ sudo apt-get update -qq
 sudo apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool python-catkin-tools ros-$ROS_DISTRO-catkin
 sudo rosdep init
 rosdep update; while [ $? != 0 ]; do sleep 1; rosdep update; done
+###
+### theck if ${BUILDER} works for common messages
+###
 mkdir -p ~/ros/ws_$REPOSITORY_NAME/src
 cd ~/ros/ws_$REPOSITORY_NAME/src
 ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
@@ -45,12 +48,17 @@ ${BUILDER} $ROS_PARALLEL_JOBS
 ## test for roseus
 sudo apt-get install -qq -y ros-${ROS_DISTRO}-roseus
 sudo dpkg -r --force-depends ros-${ROS_DISTRO}-geneus
+###
+### theck if ${BUILDER} works with test code
+###
 ## need to use latest test codes
 rm -fr devel build src/*
 cd src
+# clone only roseus package
 git clone http://github.com/jsk-ros-pkg/jsk_roseus /tmp/jsk_roseus
 (cd /tmp/jsk_roseus; git checkout `git describe --abbrev=0 --tags`)
 cp -r /tmp/jsk_roseus/roseus ./
+# copy geneus package
 ##- sudo wget https://raw.githubusercontent.com/k-okada/jsk_roseus/fix_generate_all/roseus/scripts/generate-all-msg-srv.sh -O /opt/ros/hydro/share/roseus/scripts/generate-all-msg-srv.sh
 ln -s $CI_SOURCE_PATH . # Link the repo we are testing to the new workspace
 cd ..
