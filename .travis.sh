@@ -43,7 +43,7 @@ rosdep install -q -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
 # script:
 source /opt/ros/$ROS_DISTRO/setup.bash
 ## on indigo we have to compile geneus before other packages..
-if [ ${BUILDER} == "catkin_make" ]; then ${BUILDER} geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+if [ "${BUILDER}" == "catkin_make" ]; then ${BUILDER} geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
 ${BUILDER} $ROS_PARALLEL_JOBS
 ## test for roseus
 sudo apt-get install -qq -y ros-${ROS_DISTRO}-roseus
@@ -67,14 +67,14 @@ cd ..
 ## check roseus
 source /opt/ros/$ROS_DISTRO/setup.bash
 rm -fr build devel # need to clean up to check #42 case
-if [ ${BUILDER} == "catkin_make" ]; then ${BUILDER} --only-pkg-with-deps geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+if [ "${BUILDER}" == "catkin_make" ]; then ${BUILDER} --only-pkg-with-deps geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
 ${BUILDER}
 source devel*/setup.bash
-if [ ${BUILDER} == "catkin_make_isolated" ] ; then cat devel_isolated/roseus/share/roseus/ros/roseus/manifest.l; fi
-if [ ${BUILDER} != "catkin_make_isolated" ] ; then cat devel/share/roseus/ros/roseus/manifest.l; fi
+if [ "${BUILDER}" == "catkin_make_isolated" ] ; then cat devel_isolated/roseus/share/roseus/ros/roseus/manifest.l; fi
+if [ "${BUILDER}" != "catkin_make_isolated" ] ; then cat devel/share/roseus/ros/roseus/manifest.l; fi
 ## check https://github.com/jsk-ros-pkg/geneus/pull/42
-if [ ${BUILDER} == "catkin_make_isolated" ] ; then [ `grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel_isolated/roseus/share/roseus/ros/roseus/manifest.l` != 1 ]; fi
-if [ ${BUILDER} != "catkin_make_isolated" ] ; then [ `grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel/share/roseus/ros/roseus/manifest.l` != 1 ]; fi
+if [ "${BUILDER}" == "catkin_make_isolated" ] ; then [ `grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel_isolated/roseus/share/roseus/ros/roseus/manifest.l` != 1 ]; fi
+if [ "${BUILDER}" != "catkin_make_isolated" ] ; then [ `grep -c -e "/opt/ros/${ROS_DISTRO}/share/roseus/package.xml" devel/share/roseus/ros/roseus/manifest.l` != 1 ]; fi
 rostest geneus test-geneus.test
 rostest roseus test-genmsg.catkin.test
 rostest roseus test-genmsg-oneworkspace.catkin.launch
@@ -86,7 +86,7 @@ rosdep install -q -r -n --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
 sudo dpkg -r --force-depends ros-${ROS_DISTRO}-geneus
 rm -fr build devel install logs .catkin*
 source /opt/ros/$ROS_DISTRO/setup.bash
-if [ ${BUILDER} == "catkin_make" ]; then ${BUILDER} --only-pkg-with-deps geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
+if [ "${BUILDER}" == "catkin_make" ]; then ${BUILDER} --only-pkg-with-deps geneus $ROS_PARALLEL_JOBS; rm -fr build; source devel/setup.bash; fi
 ${BUILDER}
 source devel*/setup.bash
 rostest pr2eus default-ri-test.test
