@@ -674,7 +674,7 @@ def write_constants(s, spec):
             if c.type == 'string':
                 s.write('(defconstant %s::%s::*%s* "%s")'%(spec.package, spec.actual_name, c.name.upper(), c.val.replace('"', '\\"')))
             elif c.type == 'bool':
-                s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), "t" if c.val == "True" else "nil"))
+                s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), "t" if c.val == True else "nil"))
             else:
                 s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), c.val))
 
