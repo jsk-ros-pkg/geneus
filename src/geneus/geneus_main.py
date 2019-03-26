@@ -31,7 +31,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from __future__ import print_function
 
 from optparse import OptionParser
 
@@ -70,8 +69,7 @@ def get_depends(pkg):
         pkg_map = get_pkg_map()
     pkg_obj = pkg_map[pkg]
     pkg_xml_path = pkg_obj.filename
-    depends = map(lambda x: x.name,
-                  package.parse_package(pkg_xml_path).exec_depends)
+    depends = [x.name for x in package.parse_package(pkg_xml_path).exec_depends]
     depends = list(set(depends))  # for duplicate
     return depends
 
@@ -104,8 +102,8 @@ def package_depends_impl(pkg, depends=None): # takes and returns Package object
         print(terminal_color.fmt(
             '@{yellow}[WARNING] %s is not found in workspace') % (pkg))
         return depends
-    ros_depends = filter(lambda x: x in pkg_map, get_depends(pkg))
-    tmp_depends = filter(lambda x: x not in depends, ros_depends)
+    ros_depends = [x for x in get_depends(pkg) if x in pkg_map]
+    tmp_depends = [x for x in ros_depends if x not in depends]
     depends.extend(tmp_depends)
     for p in tmp_depends:
         depends = package_depends_impl(p, depends)
