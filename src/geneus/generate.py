@@ -310,8 +310,12 @@ def write_accessors(s, spec):
             var = '_%s'%field.name
             with Indent(s, inc=1):
                 if field.is_builtin:
-                    s.write('(&optional _%s)'%var)
-                    s.write('(if _%s (setq %s _%s)) %s)'%(var,var,var,var))
+                    if field.type == "bool":
+                        s.write('(&optional (_%s :null))'%var)
+                        s.write('(if (not (eq _%s :null)) (setq %s _%s)) %s)'%(var,var,var,var))
+                    else:
+                        s.write('(&optional _%s)'%var)
+                        s.write('(if _%s (setq %s _%s)) %s)'%(var,var,var,var))
                 else:
                     s.write('(&rest _%s)'%var)
                     s.write('(if (keywordp (car _%s))'%var)
@@ -672,7 +676,7 @@ def write_constants(s, spec):
             if c.type == 'string':
                 s.write('(defconstant %s::%s::*%s* "%s")'%(spec.package, spec.actual_name, c.name.upper(), c.val.replace('"', '\\"')))
             elif c.type == 'bool':
-                s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), "t" if c.val == "True" else "nil"))
+                s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), "t" if c.val == True else "nil"))
             else:
                 s.write('(defconstant %s::%s::*%s* %s)'%(spec.package, spec.actual_name, c.name.upper(), c.val))
 

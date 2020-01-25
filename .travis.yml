@@ -7,14 +7,16 @@ notifications:
     on_failure: always
 env:
   matrix:
-    - ROS_DISTRO=indigo BUILDER='catkin_make'
-    - ROS_DISTRO=indigo BUILDER='catkin_make_isolated'
-    - ROS_DISTRO=indigo BUILDER='catkin build'
-    - ROS_DISTRO=kinetic BUILDER='catkin_make'
-    - ROS_DISTRO=kinetic BUILDER='catkin_make_isolated'
-    - ROS_DISTRO=kinetic BUILDER='catkin build'
+    - DISTRO=trusty ROS_DISTRO=indigo BUILDER='catkin_make'
+    - DISTRO=trusty ROS_DISTRO=indigo BUILDER='catkin_make_isolated'
+    - DISTRO=trusty ROS_DISTRO=indigo BUILDER='catkin build'
+    - DISTRO=xenial ROS_DISTRO=kinetic BUILDER='catkin_make'
+    - DISTRO=xenial ROS_DISTRO=kinetic BUILDER='catkin_make_isolated'
+    - DISTRO=xenial ROS_DISTRO=kinetic BUILDER='catkin build'
+    - DISTRO=bionic ROS_DISTRO=melodic BUILDER='catkin_make'
+    - DISTRO=bionic ROS_DISTRO=melodic BUILDER='catkin_make_isolated'
+    - DISTRO=bionic ROS_DISTRO=melodic BUILDER='catkin build'
 before_script:
-  - case $ROS_DISTRO in "hydro") export DISTRO=precise;; "indigo") export DISTRO=trusty;; "kinetic") export DISTRO=xenial;; esac;
   - export DOCKER_IMAGE=ubuntu:$DISTRO
   - export CI_SOURCE_PATH=$(pwd)
   - export REPOSITORY_NAME=${PWD##*/}
