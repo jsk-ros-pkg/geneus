@@ -23,7 +23,7 @@ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update -qq
 sudo apt-get install -qq -y python-catkin-pkg python-rosdep python-wstool python-catkin-tools ros-$ROS_DISTRO-catkin
 sudo rosdep init
-rosdep update; while [ $? != 0 ]; do sleep 1; rosdep update; done
+rosdep update --include-eol-distros; while [ $? != 0 ]; do sleep 1; rosdep update --include-eol-distros; done
 ###
 ### theck if ${BUILDER} works for common messages
 ###
