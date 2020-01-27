@@ -13,3 +13,6 @@ string STRING_4=  string ## string
 string STRING_5=#string
 string STRING_6='#string'
 string STRING_7="#string"
+uint8 PENDING         = 0   # example constant
+uint8 ACTIVE          = 1
+uint8 PREEMPTED       = 2

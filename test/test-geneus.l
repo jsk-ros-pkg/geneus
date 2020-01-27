@@ -326,6 +326,16 @@ Out[8]: '"#string"'
     (setq tmp geneus::test::*string_7*)
     (format *error-output* "geneus::test::*string_7* is ~A~%" tmp)
     (assert (string= tmp "\"#string\""))
+
+    (setq tmp (geneus::test-to-symbol geneus::test::*pending*))
+    (format *error-output* "geneus::test-to-symbol geneus::test::*pending* is ~A (~A)~%" geneus::test::*pending* tmp)
+    (assert (eq tmp 'geneus::test::*pending*))
+    (setq tmp (geneus::test-to-symbol geneus::test::*active*))
+    (format *error-output* "geneus::test-to-symbol geneus::test::*active* is ~A (~A)~%" geneus::test::*active* tmp)
+    (assert (eq tmp 'geneus::test::*active*))
+    (setq tmp (geneus::test-to-symbol geneus::test::*preempted*))
+    (format *error-output* "geneus::test-to-symbol geneus::test::*preempted* is ~A (~A)~%" geneus::test::*preempted* tmp)
+    (assert (eq tmp 'geneus::test::*preempted*))
     ))
 
 (ros::roseus "test_geneus")
