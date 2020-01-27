@@ -2,8 +2,8 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.0 (2020-01-27)
+------------------
 
 * **CAUTION** This version will not work on 14.04, If you want to run on 14.04 due to bump CMake version to avoid CMP0048 warning
   Use `cmake_minimum_required(VERSION 2.8.3)` for CMakeLists.txt

@@ -4,7 +4,7 @@
   schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>geneus</name>
-  <version>2.2.6</version>
+  <version>3.0.0</version>
   <description>
   EusLisp ROS message and service generators.
   </description>
