@@ -2,6 +2,69 @@
 Changelog for package geneus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
+* **CAUTION** This version will not work on 14.04, If you want to run on 14.04 due to bump CMake version to avoid CMP0048 warning
+  Use `cmake_minimum_required(VERSION 2.8.3)` for CMakeLists.txt
+
+* [generate.py] add feature to write const to string (`#13 <https://github.com/jsk-ros-pkg/geneus/issues/13>`_)
+* update geneus for 20.04 / Noetic (`#69 <https://github.com/jsk-ros-pkg/geneus/issues/69>`_)
+
+  * from __future_\_ import print_function is required for python2
+  * Python 3 suppoort. Generated using 2to3
+  * Use setuptools instead of distutils
+  * Make setup.py not executable
+  * Drop trusty/indigo from CI
+  * Bump CMake version to avoid CMP0048 warning
+  * add test to run ubuntu/focal and debian/stable
+  * run rosdep update with --incldue-eol-distros for indigo
+
+* fix bug of write_constants (`#62 <https://github.com/jsk-ros-pkg/geneus/issues/52>`_)
+
+  * add test to check `#59 <https://github.com/jsk-ros-pkg/geneus/issues/59>`_
+
+* fix wrongly commited in #61 (`#63 <https://github.com/jsk-ros-pkg/geneus/issues/63>`_)
+
+  * .travis: catkin build needs to run with geneus first, befor compiling std_msgs
+  * .travis.sh: fix script errors with ¥ == -> ¥
+  * copy std_msgs repository for geneus test codes
+  * .travis.sh: add comments
+  * fix https://github.com/jsk-ros-pkg/geneus/pull/61/commits/ef9868e4e621297449e5931453fbe4582a542ca4
+  * fix wrongly commited in #61
+
+* add test to check #56 case (`#61 <https://github.com/jsk-ros-pkg/geneus/issues/61>`_)
+
+  * generate.py change generator for field_type == bool
+  * remove unnecessary (ros::load-ros-manifeset 'euslisp')
+    [ WARN] [1547033310.743978735]: Calling (load-ros-manifest euslisp) for the package without msg/srv will be deprecated
+    [ WARN] [1547033310.744036587]: ACTION REQUIRED
+    [ WARN] [1547033310.744049863]:  Use (load-ros-{package,msg,srv} pkg) for the dependent packages with msg/srv
+    [ WARN] [1547033310.744059431]:  See https://github.com/jsk-ros-pkg/jsk_robot/issues/823
+  * add test to check #56 case
+  * add test/test-geneus.test from roseus package
+
+* run test-geneus.test within geneus package (`#60 <https://github.com/jsk-ros-pkg/geneus/issues/60>`_)
+
+  * run rostest geneus test-geneus.test
+  * move test/{test-geneus.test,test-geneus.l,test_geneus_send_msgs.py} from roseus package
+
+* add melodic test (`#58 <https://github.com/jsk-ros-pkg/geneus/issues/58>`_)
+
+  * install tzdata with non-interactive mode
+  * add melodic
+
+* when array_len is nil, do not run dotimes..., see https://github.com/jsk-ros-pkg/jsk_roseus/issues/544 (`#55 <https://github.com/jsk-ros-pkg/geneus/issues/55>`_)
+
+* add test kinetic on travis(`#54 <https://github.com/jsk-ros-pkg/geneus/issues/54>`_)
+
+  * pr2_controllers_msgs is not released on kinetic and that's ok for geneus test
+
+* need to use system python, with travis-python, we can not find python modeule install by ap (`#53 <https://github.com/jsk-ros-pkg/geneus/issues/53>`_)
+  https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/117
+
+* Contributors: Kei Okada, Markus Grimm, Shane Loretz, Taichi Higashide
+
 2.2.6 (2017-05-22)
 ------------------
 * [geneus_main.py] suppress warning (`#52 <https://github.com/jsk-ros-pkg/geneus/issues/52>`_)
